@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:firebase_messaging/firebase_messaging.dart';
 
 // cxbzkFBqRRSVNRgLgqjk98:APA91bGtI5VmzcjVo_nx6QeoWLDuTcBZ-YaJUxcO36whogS25C9hb9PQi-yinFP7xC5jGzt3lbhTYvTm-m2kf1whZubEeMRxZKMjoz45M_Dp-j4ohY9orSY6Ix33niUgMSyazuWirfZ1
@@ -5,7 +7,8 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 class PushNotificationsProvider {
 
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
-
+  final _mensajesStreamController = StreamController<String>.broadcast();
+  Stream<String> get mensajesStream => _mensajesStreamController.stream;
 
   static Future<dynamic> onBackgroundMessage(Map<String, dynamic> message) async {
     if (message.containsKey('data')) {
@@ -42,17 +45,27 @@ class PushNotificationsProvider {
   Future<dynamic> onMessage(Map<String, dynamic> message) async {
     
     print('=======onMessage============');
-    print('message: $message');
+
+    final argumento = message['data']['comida'] ?? 'no data';
+    _mensajesStreamController.sink.add( argumento );
   }
   Future<dynamic> onLaunch(Map<String, dynamic> message) async {
     
     print('=======onLaunch============');
-    print('message: $message');
+    final argumento = message['data']['comida'] ?? 'no data';
+    _mensajesStreamController.sink.add( argumento );
+
   }
   Future<dynamic> onResume(Map<String, dynamic> message) async {
     
     print('=======onResume============');
-    print('message: $message');
+    final argumento = message['data']['comida'] ?? 'no data';
+    _mensajesStreamController.sink.add( argumento );
+
+  }
+
+  dispose() {
+    _mensajesStreamController?.close();
   }
 
 }
